@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { PanelLayout, PanelSpec, PieceSpec, Placement } from '../../core/types.ts'
 import { FALLBACK_COLOR } from '../../utils/pieceColors.ts'
 
@@ -59,6 +60,7 @@ interface PanelViewProps {
 }
 
 export default function PanelView({ panel, layout, index, colors, pieceById }: PanelViewProps) {
+  const { t } = useTranslation()
   const margin = Math.max(panel.width, panel.height) * 0.015
   const initial: ViewBox = {
     x: -margin,
@@ -148,10 +150,14 @@ export default function PanelView({ panel, layout, index, colors, pieceById }: P
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm print:break-inside-avoid print:border-0 print:p-0 print:shadow-none">
       <div className="mb-3 flex items-center justify-between text-sm">
         <h3 className="font-semibold text-slate-700">
-          Panel {index + 1}
+          {t('layout.panelHeading', { n: index + 1 })}
           <span className="ml-2 font-normal text-slate-400">
-            {panel.width} × {panel.height} mm · {layout.placements.length} pieces ·{' '}
-            {(layout.utilization * 100).toFixed(1)}% used
+            {t('layout.panelMeta', {
+              width: panel.width,
+              height: panel.height,
+              pieces: t('layout.pieceCount', { count: layout.placements.length }),
+              used: `${(layout.utilization * 100).toFixed(1)}%`,
+            })}
           </span>
         </h3>
         {zoomed && (
@@ -160,7 +166,7 @@ export default function PanelView({ panel, layout, index, colors, pieceById }: P
             onClick={() => setVb(initial)}
             className="rounded-md px-2 py-1 text-xs font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700 print:hidden"
           >
-            Reset zoom
+            {t('layout.resetZoom')}
           </button>
         )}
       </div>
@@ -176,7 +182,7 @@ export default function PanelView({ panel, layout, index, colors, pieceById }: P
           onPointerUp={onPointerUp}
           onPointerLeave={() => setTooltip(null)}
           role="img"
-          aria-label={`Cutting layout for panel ${index + 1}`}
+          aria-label={t('layout.ariaLayout', { n: index + 1 })}
         >
           <defs>
             <pattern
@@ -240,11 +246,14 @@ export default function PanelView({ panel, layout, index, colors, pieceById }: P
               )}
             </p>
             <p className="mt-1 text-slate-300">
-              {tooltip.placement.width} × {tooltip.placement.height} mm
-              {tooltip.placement.rotated && ' (rotated 90°)'}
+              {t('layout.tooltip.size', {
+                width: tooltip.placement.width,
+                height: tooltip.placement.height,
+              })}
+              {tooltip.placement.rotated ? ` ${t('layout.tooltip.rotated')}` : ''}
             </p>
             <p className="text-slate-400">
-              at x {tooltip.placement.x}, y {tooltip.placement.y}
+              {t('layout.tooltip.position', { x: tooltip.placement.x, y: tooltip.placement.y })}
             </p>
           </div>
         )}

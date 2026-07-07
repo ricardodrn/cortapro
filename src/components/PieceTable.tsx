@@ -1,14 +1,17 @@
 import { useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAppStore } from '../state/store.ts'
 import type { PieceIssues } from '../core/inputValidation.ts'
 import type { PieceSpec } from '../core/types.ts'
 import { parsePiecesCsv } from '../core/csv.ts'
+import { useMsg } from '../i18n/useMsg.ts'
 import NumberField from './NumberField.tsx'
 
 const textInputClass =
   'w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-800 outline-none transition-colors focus:border-sky-400 focus:ring-2 focus:ring-sky-100'
 
 function PieceRow({ piece, issues }: { piece: PieceSpec; issues: PieceIssues }) {
+  const { t, tMsg } = useMsg()
   const updatePiece = useAppStore((s) => s.updatePiece)
   const removePiece = useAppStore((s) => s.removePiece)
   const duplicatePiece = useAppStore((s) => s.duplicatePiece)
@@ -19,9 +22,9 @@ function PieceRow({ piece, issues }: { piece: PieceSpec; issues: PieceIssues }) 
         <input
           type="text"
           value={piece.code}
-          aria-label="Piece code"
+          aria-label={t('pieces.aria.code')}
           aria-invalid={issues.code ? true : undefined}
-          title={issues.code}
+          title={tMsg(issues.code)}
           onChange={(e) => updatePiece(piece.id, { code: e.target.value })}
           className={
             issues.code
@@ -37,8 +40,8 @@ function PieceRow({ piece, issues }: { piece: PieceSpec; issues: PieceIssues }) 
         <input
           type="text"
           value={piece.description}
-          aria-label="Piece description"
-          placeholder="Description"
+          aria-label={t('pieces.aria.description')}
+          placeholder={t('pieces.placeholder.description')}
           onChange={(e) => updatePiece(piece.id, { description: e.target.value })}
           className={textInputClass}
         />
@@ -47,16 +50,16 @@ function PieceRow({ piece, issues }: { piece: PieceSpec; issues: PieceIssues }) 
         <NumberField
           value={piece.width}
           onCommit={(width) => updatePiece(piece.id, { width })}
-          error={issues.width ?? issues.fit}
-          aria-label="Piece width in mm"
+          error={tMsg(issues.width ?? issues.fit)}
+          aria-label={t('pieces.aria.width')}
         />
       </td>
       <td className="w-24 px-1.5 py-1.5">
         <NumberField
           value={piece.height}
           onCommit={(height) => updatePiece(piece.id, { height })}
-          error={issues.height ?? issues.fit}
-          aria-label="Piece height in mm"
+          error={tMsg(issues.height ?? issues.fit)}
+          aria-label={t('pieces.aria.height')}
         />
       </td>
       <td className="w-20 px-1.5 py-1.5">
@@ -64,15 +67,15 @@ function PieceRow({ piece, issues }: { piece: PieceSpec; issues: PieceIssues }) 
           value={piece.quantity}
           onCommit={(quantity) => updatePiece(piece.id, { quantity })}
           integer
-          error={issues.quantity}
-          aria-label="Piece quantity"
+          error={tMsg(issues.quantity)}
+          aria-label={t('pieces.aria.quantity')}
         />
       </td>
       <td className="w-16 px-1.5 py-1.5 text-center">
         <input
           type="checkbox"
           checked={piece.rotatable}
-          aria-label="Allow 90° rotation"
+          aria-label={t('pieces.aria.rotatable')}
           onChange={(e) => updatePiece(piece.id, { rotatable: e.target.checked })}
           className="size-4 accent-sky-600"
         />
@@ -82,7 +85,7 @@ function PieceRow({ piece, issues }: { piece: PieceSpec; issues: PieceIssues }) 
           <button
             type="button"
             onClick={() => duplicatePiece(piece.id)}
-            title="Duplicate row"
+            title={t('pieces.action.duplicate')}
             className="rounded-md px-2 py-1 text-xs text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
           >
             ⧉
@@ -90,7 +93,7 @@ function PieceRow({ piece, issues }: { piece: PieceSpec; issues: PieceIssues }) 
           <button
             type="button"
             onClick={() => removePiece(piece.id)}
-            title="Delete row"
+            title={t('pieces.action.delete')}
             className="rounded-md px-2 py-1 text-xs text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600"
           >
             ✕
@@ -102,6 +105,7 @@ function PieceRow({ piece, issues }: { piece: PieceSpec; issues: PieceIssues }) 
 }
 
 export default function PieceTable({ issues }: { issues: Record<string, PieceIssues> }) {
+  const { t } = useTranslation()
   const pieces = useAppStore((s) => s.pieces)
   const addPiece = useAppStore((s) => s.addPiece)
   const addPieces = useAppStore((s) => s.addPieces)
@@ -115,29 +119,32 @@ export default function PieceTable({ issues }: { issues: Record<string, PieceIss
     const { pieces: imported, errors } = parsePiecesCsv(await file.text())
     if (imported.length > 0) addPieces(imported)
     const parts = []
-    if (imported.length > 0) parts.push(`Imported ${imported.length} piece types`)
-    if (errors.length > 0) parts.push(errors.slice(0, 3).join(' · '))
-    if (errors.length > 3) parts.push(`+${errors.length - 3} more errors`)
+    if (imported.length > 0) parts.push(t('pieces.imported', { count: imported.length }))
+    if (errors.length > 0) {
+      parts.push(errors.slice(0, 3).map((e) => t(e.key, e.values)).join(' · '))
+    }
+    if (errors.length > 3) parts.push(t('pieces.moreErrors', { count: errors.length - 3 }))
     setImportStatus({
       ok: errors.length === 0 && imported.length > 0,
-      text: parts.join(' — ') || 'No pieces found in the file',
+      text: parts.join(' — ') || t('pieces.noPiecesInFile'),
     })
   }
 
   const errorMessages = pieces.flatMap((p) => {
     const rowIssues = issues[p.id]
     if (!rowIssues) return []
-    return Object.values(rowIssues).map((msg) => `${p.code.trim() || '(no code)'}: ${msg}`)
+    const code = p.code.trim() || t('pieces.noCode')
+    return Object.values(rowIssues).map((m) => `${code}: ${t(m.key, m.values)}`)
   })
 
   return (
     <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-sm font-semibold text-slate-700">
-          Required pieces
+          {t('pieces.title')}
           <span className="ml-2 font-normal text-slate-400">
-            {pieces.length} {pieces.length === 1 ? 'type' : 'types'} ·{' '}
-            {pieces.reduce((sum, p) => sum + p.quantity, 0)} total
+            {t('pieces.typeCount', { count: pieces.length })} ·{' '}
+            {t('pieces.total', { count: pieces.reduce((sum, p) => sum + p.quantity, 0) })}
           </span>
         </h2>
         <div className="flex flex-wrap gap-2">
@@ -146,7 +153,7 @@ export default function PieceTable({ issues }: { issues: Record<string, PieceIss
             onClick={() => csvInput.current?.click()}
             className="rounded-md px-3 py-1.5 text-xs font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
           >
-            Import CSV
+            {t('pieces.importCsv')}
           </button>
           <input
             ref={csvInput}
@@ -164,21 +171,21 @@ export default function PieceTable({ issues }: { issues: Record<string, PieceIss
             onClick={loadExample}
             className="rounded-md px-3 py-1.5 text-xs font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
           >
-            Load example
+            {t('pieces.loadExample')}
           </button>
           <button
             type="button"
             onClick={clearPieces}
             className="rounded-md px-3 py-1.5 text-xs font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
           >
-            Clear all
+            {t('pieces.clearAll')}
           </button>
           <button
             type="button"
             onClick={addPiece}
             className="rounded-md bg-sky-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-sky-700"
           >
-            + Add piece
+            {t('pieces.addPiece')}
           </button>
         </div>
       </div>
@@ -195,26 +202,26 @@ export default function PieceTable({ issues }: { issues: Record<string, PieceIss
             onClick={() => setImportStatus(null)}
             className="ml-2 font-medium underline"
           >
-            Dismiss
+            {t('pieces.dismiss')}
           </button>
         </p>
       )}
 
       {pieces.length === 0 ? (
         <p className="rounded-md border border-dashed border-slate-300 px-4 py-8 text-center text-sm text-slate-400">
-          No pieces yet. Add one or load the example cut list.
+          {t('pieces.empty')}
         </p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">
             <thead>
               <tr className="text-left text-xs font-medium tracking-wide text-slate-500 uppercase">
-                <th className="px-1.5 pb-2">Code</th>
-                <th className="px-1.5 pb-2">Description</th>
-                <th className="px-1.5 pb-2">Width</th>
-                <th className="px-1.5 pb-2">Height</th>
-                <th className="px-1.5 pb-2">Qty</th>
-                <th className="px-1.5 pb-2 text-center">Rotate</th>
+                <th className="px-1.5 pb-2">{t('pieces.col.code')}</th>
+                <th className="px-1.5 pb-2">{t('pieces.col.description')}</th>
+                <th className="px-1.5 pb-2">{t('pieces.col.width')}</th>
+                <th className="px-1.5 pb-2">{t('pieces.col.height')}</th>
+                <th className="px-1.5 pb-2">{t('pieces.col.qty')}</th>
+                <th className="px-1.5 pb-2 text-center">{t('pieces.col.rotate')}</th>
                 <th className="px-1.5 pb-2" />
               </tr>
             </thead>

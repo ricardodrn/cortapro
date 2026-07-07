@@ -21,10 +21,9 @@ describe('validatePanel', () => {
   })
 
   it('rejects non-positive dimensions', () => {
-    expect(validatePanel({ width: 0, height: -5 })).toMatchObject({
-      width: expect.any(String),
-      height: expect.any(String),
-    })
+    const issues = validatePanel({ width: 0, height: -5 })
+    expect(issues.width?.key).toBe('validation.panelWidthPositive')
+    expect(issues.height?.key).toBe('validation.panelHeightPositive')
   })
 
   it('rejects non-positive thickness but allows it to be absent', () => {
@@ -63,7 +62,9 @@ describe('validatePiece', () => {
     expect(validatePiece(piece({ code: '  ' }), panel, []).code).toBeDefined()
     const a = piece({ id: 'a', code: '01' })
     const b = piece({ id: 'b', code: '01' })
-    expect(validatePiece(a, panel, [a, b]).code).toContain('Duplicate')
+    const dup = validatePiece(a, panel, [a, b]).code
+    expect(dup?.key).toBe('validation.pieceCodeDuplicate')
+    expect(dup?.values).toMatchObject({ code: '01' })
   })
 
   it('rejects non-positive dimensions and fractional or zero quantity', () => {

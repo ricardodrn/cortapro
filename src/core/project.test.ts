@@ -46,7 +46,7 @@ describe('parseProject validation', () => {
       }),
     )
     expect(badPiece.ok).toBe(false)
-    if (!badPiece.ok) expect(badPiece.error).toContain('Piece 1')
+    if (!badPiece.ok) expect(badPiece.error.values?.index).toBe(1)
   })
 
   it('fills defaults for missing optional fields', () => {

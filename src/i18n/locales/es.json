@@ -1,0 +1,160 @@
+{
+  "app": {
+    "title": "CortaPro",
+    "subtitle": "Optimizador de listas de corte — dimensiones en mm",
+    "language": "Idioma",
+    "lang": {
+      "en": "Inglés",
+      "es": "Español"
+    }
+  },
+  "project": {
+    "export": "Exportar proyecto",
+    "import": "Importar proyecto"
+  },
+  "panel": {
+    "stock": "Panel de stock",
+    "width": "Ancho (mm)",
+    "height": "Alto (mm)",
+    "material": "Material",
+    "materialPlaceholder": "MDF, contrachapado…",
+    "thickness": "Espesor (mm, opcional)",
+    "cuttingSettings": "Configuración de corte",
+    "kerf": "Espesor del disco / corte (mm)",
+    "algorithm": "Algoritmo",
+    "aria": {
+      "width": "Ancho del panel en mm",
+      "height": "Alto del panel en mm",
+      "thickness": "Espesor del panel en mm",
+      "kerf": "Espesor del corte de sierra en mm"
+    }
+  },
+  "packer": {
+    "auto": "Auto (mejor resultado)",
+    "maxrects": "MaxRects (máximo aprovechamiento)",
+    "guillotine": "Guillotina (cortes de borde a borde)"
+  },
+  "pieces": {
+    "title": "Piezas requeridas",
+    "typeCount_one": "{{count}} tipo",
+    "typeCount_other": "{{count}} tipos",
+    "total": "{{count}} en total",
+    "importCsv": "Importar CSV",
+    "loadExample": "Cargar ejemplo",
+    "clearAll": "Borrar todo",
+    "addPiece": "+ Añadir pieza",
+    "dismiss": "Descartar",
+    "empty": "No hay piezas aún. Añade una o carga la lista de corte de ejemplo.",
+    "imported_one": "Se importó {{count}} tipo de pieza",
+    "imported_other": "Se importaron {{count}} tipos de pieza",
+    "moreErrors": "+{{count}} errores más",
+    "noPiecesInFile": "No se encontraron piezas en el archivo",
+    "noCode": "(sin código)",
+    "col": {
+      "code": "Código",
+      "description": "Descripción",
+      "width": "Ancho",
+      "height": "Alto",
+      "qty": "Cant.",
+      "rotate": "Rotar"
+    },
+    "placeholder": {
+      "description": "Descripción"
+    },
+    "aria": {
+      "code": "Código de la pieza",
+      "description": "Descripción de la pieza",
+      "width": "Ancho de la pieza en mm",
+      "height": "Alto de la pieza en mm",
+      "quantity": "Cantidad de piezas",
+      "rotatable": "Permitir rotación de 90°"
+    },
+    "action": {
+      "duplicate": "Duplicar fila",
+      "delete": "Eliminar fila"
+    }
+  },
+  "optimization": {
+    "title": "Optimización",
+    "optimize": "Optimizar cortes",
+    "optimizing": "Optimizando…",
+    "addToOptimize": "Añade al menos una pieza para optimizar.",
+    "fixToOptimize": "Corrige los errores de entrada resaltados para optimizar.",
+    "summary": "{{panels}} · {{utilization}} de aprovechamiento · {{waste}} de desperdicio",
+    "panelCount_one": "{{count}} panel",
+    "panelCount_other": "{{count}} paneles",
+    "unplaced_one": "No se pudo colocar {{count}} pieza: {{codes}}",
+    "unplaced_other": "No se pudieron colocar {{count}} piezas: {{codes}}"
+  },
+  "results": {
+    "title": "Resultados",
+    "strategy": "Estrategia: {{strategy}}",
+    "print": "Imprimir / PDF",
+    "tile": {
+      "panels": "Paneles",
+      "utilization": "Aprovechamiento",
+      "waste": "Desperdicio",
+      "usedArea": "Área utilizada",
+      "usedAreaDetail": "de {{total}}",
+      "largestOffcut": "Sobrante más grande",
+      "piecesPlaced": "Piezas colocadas"
+    },
+    "perPanel": "Desglose por panel",
+    "piecePlacement": "Ubicación de piezas",
+    "col": {
+      "panel": "Panel",
+      "pieces": "Piezas",
+      "used": "Usado",
+      "waste": "Desperdicio",
+      "utilization": "Aprovechamiento",
+      "largestOffcut": "Sobrante más grande",
+      "piece": "Pieza",
+      "size": "Tamaño",
+      "qty": "Cant.",
+      "placement": "Ubicación"
+    },
+    "panelNumber": "Panel {{n}}",
+    "placementEntry": "Panel {{n}} ×{{count}}",
+    "unplacedCount": "({{count}} sin colocar)"
+  },
+  "layout": {
+    "title": "Diseño de corte",
+    "panelHeading": "Panel {{n}}",
+    "panelMeta": "{{width}} × {{height}} mm · {{pieces}} · {{used}} usado",
+    "pieceCount_one": "{{count}} pieza",
+    "pieceCount_other": "{{count}} piezas",
+    "resetZoom": "Restablecer zoom",
+    "ariaLayout": "Diseño de corte para el panel {{n}}",
+    "tooltip": {
+      "size": "{{width}} × {{height}} mm",
+      "rotated": "(rotado 90°)",
+      "position": "en x {{x}}, y {{y}}"
+    }
+  },
+  "validation": {
+    "panelWidthPositive": "El ancho debe ser un número positivo",
+    "panelHeightPositive": "El alto debe ser un número positivo",
+    "panelThicknessPositive": "El espesor debe ser un número positivo",
+    "pieceCodeRequired": "El código es obligatorio",
+    "pieceCodeDuplicate": "Código duplicado \"{{code}}\"",
+    "pieceWidthPositive": "El ancho debe ser un número positivo",
+    "pieceHeightPositive": "El alto debe ser un número positivo",
+    "pieceQuantityWhole": "La cantidad debe ser un número entero ≥ 1",
+    "pieceFitRotatable": "{{pw}} × {{ph}} no cabe en el panel de {{panelW}} × {{panelH}} en ninguna orientación",
+    "pieceFitFixed": "{{pw}} × {{ph}} no cabe en el panel de {{panelW}} × {{panelH}} (la rotación está desactivada)"
+  },
+  "csv": {
+    "missingColumns": "Línea {{line}}: se esperaba código, descripción, ancho, alto, cantidad",
+    "missingCode": "Línea {{line}}: falta el código",
+    "invalidSize": "Línea {{line}}: tamaño inválido \"{{width}}\" × \"{{height}}\"",
+    "invalidQuantity": "Línea {{line}}: cantidad inválida \"{{quantity}}\""
+  },
+  "projectError": {
+    "notJson": "No es un archivo JSON válido",
+    "notCortaPro": "No es un archivo de proyecto de CortaPro",
+    "noPanel": "El proyecto no tiene un tamaño de panel válido",
+    "noPieceList": "El proyecto no tiene una lista de piezas",
+    "pieceDimensions": "La pieza {{index}} tiene dimensiones inválidas",
+    "pieceQuantity": "La pieza {{index}} tiene una cantidad inválida"
+  }
+}

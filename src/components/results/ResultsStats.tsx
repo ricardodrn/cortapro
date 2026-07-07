@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useAppStore } from '../../state/store.ts'
 import { panelBreakdown, placementSummary } from '../../core/reporting.ts'
 import { formatArea, formatPct, formatSize } from '../../utils/format.ts'
@@ -18,6 +19,7 @@ const td = 'px-3 py-2 text-sm whitespace-nowrap text-slate-700'
 const num = `${td} tabular-nums text-right`
 
 export default function ResultsStats() {
+  const { t } = useTranslation()
   const result = useAppStore((s) => s.result)
   const pieces = useAppStore((s) => s.pieces)
 
@@ -31,38 +33,38 @@ export default function ResultsStats() {
   return (
     <section className="space-y-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm print:break-inside-avoid print:border-0 print:p-0 print:shadow-none">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="text-sm font-semibold text-slate-700">Results</h2>
+        <h2 className="text-sm font-semibold text-slate-700">{t('results.title')}</h2>
         <div className="flex items-baseline gap-3">
-          <p className="text-xs text-slate-400">Strategy: {result.strategy}</p>
+          <p className="text-xs text-slate-400">{t('results.strategy', { strategy: result.strategy })}</p>
           <button
             type="button"
             onClick={() => window.print()}
             className="rounded-md border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-100 print:hidden"
           >
-            Print / PDF
+            {t('results.print')}
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         <StatTile
-          label="Panels"
+          label={t('results.tile.panels')}
           value={String(stats.panelCount)}
           detail={`${result.panel.width} × ${result.panel.height} mm`}
         />
-        <StatTile label="Utilization" value={formatPct(stats.utilizationPct)} />
+        <StatTile label={t('results.tile.utilization')} value={formatPct(stats.utilizationPct)} />
         <StatTile
-          label="Waste"
+          label={t('results.tile.waste')}
           value={formatPct(stats.wastePct)}
           detail={formatArea(stats.wasteArea)}
         />
         <StatTile
-          label="Used area"
+          label={t('results.tile.usedArea')}
           value={formatArea(stats.usedArea)}
-          detail={`of ${formatArea(stats.totalPanelArea)}`}
+          detail={t('results.tile.usedAreaDetail', { total: formatArea(stats.totalPanelArea) })}
         />
         <StatTile
-          label="Largest offcut"
+          label={t('results.tile.largestOffcut')}
           value={
             stats.largestFreeRect
               ? `${stats.largestFreeRect.width} × ${stats.largestFreeRect.height}`
@@ -73,7 +75,7 @@ export default function ResultsStats() {
           ) : undefined}
         />
         <StatTile
-          label="Pieces placed"
+          label={t('results.tile.piecesPlaced')}
           value={`${placements.reduce((s, r) => s + r.placedTotal, 0)} / ${placements.reduce(
             (s, r) => s + r.quantity,
             0,
@@ -83,23 +85,23 @@ export default function ResultsStats() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="min-w-0">
-          <h3 className="mb-2 text-xs font-semibold text-slate-500">Per-panel breakdown</h3>
+          <h3 className="mb-2 text-xs font-semibold text-slate-500">{t('results.perPanel')}</h3>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
                 <tr>
-                  <th className={th}>Panel</th>
-                  <th className={`${th} text-right`}>Pieces</th>
-                  <th className={`${th} text-right`}>Used</th>
-                  <th className={`${th} text-right`}>Waste</th>
-                  <th className={`${th} text-right`}>Utilization</th>
-                  <th className={`${th} text-right`}>Largest offcut</th>
+                  <th className={th}>{t('results.col.panel')}</th>
+                  <th className={`${th} text-right`}>{t('results.col.pieces')}</th>
+                  <th className={`${th} text-right`}>{t('results.col.used')}</th>
+                  <th className={`${th} text-right`}>{t('results.col.waste')}</th>
+                  <th className={`${th} text-right`}>{t('results.col.utilization')}</th>
+                  <th className={`${th} text-right`}>{t('results.col.largestOffcut')}</th>
                 </tr>
               </thead>
               <tbody>
                 {panels.map((p) => (
                   <tr key={p.panelIndex} className="border-t border-slate-100">
-                    <td className={td}>Panel {p.panelIndex + 1}</td>
+                    <td className={td}>{t('results.panelNumber', { n: p.panelIndex + 1 })}</td>
                     <td className={num}>{p.pieceCount}</td>
                     <td className={num}>{formatArea(p.usedArea)}</td>
                     <td className={num}>{formatArea(p.wasteArea)}</td>
@@ -117,15 +119,15 @@ export default function ResultsStats() {
         </div>
 
         <div className="min-w-0">
-          <h3 className="mb-2 text-xs font-semibold text-slate-500">Piece placement</h3>
+          <h3 className="mb-2 text-xs font-semibold text-slate-500">{t('results.piecePlacement')}</h3>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
                 <tr>
-                  <th className={th}>Piece</th>
-                  <th className={th}>Size</th>
-                  <th className={`${th} text-right`}>Qty</th>
-                  <th className={th}>Placement</th>
+                  <th className={th}>{t('results.col.piece')}</th>
+                  <th className={th}>{t('results.col.size')}</th>
+                  <th className={`${th} text-right`}>{t('results.col.qty')}</th>
+                  <th className={th}>{t('results.col.placement')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -149,12 +151,12 @@ export default function ResultsStats() {
                     <td className={num}>{row.quantity}</td>
                     <td className={`${td} text-xs`}>
                       {row.perPanel
-                        .map((n, i) => (n > 0 ? `Panel ${i + 1} ×${n}` : null))
+                        .map((n, i) => (n > 0 ? t('results.placementEntry', { n: i + 1, count: n }) : null))
                         .filter(Boolean)
                         .join(', ') || '—'}
                       {row.unplacedCount > 0 && (
                         <span className="ml-1 font-medium text-amber-600">
-                          ({row.unplacedCount} unplaced)
+                          ({t('results.unplacedCount', { count: row.unplacedCount })})
                         </span>
                       )}
                     </td>

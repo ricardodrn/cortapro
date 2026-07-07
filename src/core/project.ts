@@ -1,3 +1,4 @@
+import { msg, type TransMsg } from './i18nMsg.ts'
 import type { PackerKind, PanelSpec, PieceSpec } from './types.ts'
 
 /** Everything needed to restore a working session. */
@@ -18,7 +19,9 @@ export function serializeProject(data: ProjectData): string {
   return JSON.stringify(file, null, 2)
 }
 
-export type ParseProjectResult = { ok: true; project: ProjectData } | { ok: false; error: string }
+export type ParseProjectResult =
+  | { ok: true; project: ProjectData }
+  | { ok: false; error: TransMsg }
 
 const isPos = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v) && v > 0
 
@@ -28,20 +31,20 @@ export function parseProject(text: string): ParseProjectResult {
   try {
     raw = JSON.parse(text)
   } catch {
-    return { ok: false, error: 'Not a valid JSON file' }
+    return { ok: false, error: msg('projectError.notJson') }
   }
 
   if (typeof raw !== 'object' || raw === null) {
-    return { ok: false, error: 'Not a CortaPro project file' }
+    return { ok: false, error: msg('projectError.notCortaPro') }
   }
   const file = raw as Record<string, unknown>
   if (file.app !== 'cortapro') {
-    return { ok: false, error: 'Not a CortaPro project file' }
+    return { ok: false, error: msg('projectError.notCortaPro') }
   }
 
   const panelRaw = file.panel as Record<string, unknown> | undefined
   if (!panelRaw || !isPos(panelRaw.width) || !isPos(panelRaw.height)) {
-    return { ok: false, error: 'Project has no valid panel size' }
+    return { ok: false, error: msg('projectError.noPanel') }
   }
   const panel: PanelSpec = {
     width: panelRaw.width,
@@ -51,17 +54,17 @@ export function parseProject(text: string): ParseProjectResult {
   }
 
   if (!Array.isArray(file.pieces)) {
-    return { ok: false, error: 'Project has no piece list' }
+    return { ok: false, error: msg('projectError.noPieceList') }
   }
   const pieces: PieceSpec[] = []
   for (const [i, entry] of (file.pieces as unknown[]).entries()) {
     const p = entry as Record<string, unknown>
     if (typeof p !== 'object' || p === null || !isPos(p.width) || !isPos(p.height)) {
-      return { ok: false, error: `Piece ${i + 1} has invalid dimensions` }
+      return { ok: false, error: msg('projectError.pieceDimensions', { index: i + 1 }) }
     }
     const quantity = p.quantity
     if (typeof quantity !== 'number' || !Number.isInteger(quantity) || quantity < 1) {
-      return { ok: false, error: `Piece ${i + 1} has an invalid quantity` }
+      return { ok: false, error: msg('projectError.pieceQuantity', { index: i + 1 }) }
     }
     pieces.push({
       id: typeof p.id === 'string' && p.id !== '' ? p.id : crypto.randomUUID(),

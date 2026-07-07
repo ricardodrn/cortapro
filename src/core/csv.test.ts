@@ -44,9 +44,9 @@ describe('parsePiecesCsv', () => {
     )
     expect(pieces.map((p) => p.code)).toEqual(['01', '05'])
     expect(errors).toHaveLength(3)
-    expect(errors[0]).toContain('Line 2')
-    expect(errors[1]).toContain('Line 3')
-    expect(errors[2]).toContain('Line 4')
+    expect(errors[0].values?.line).toBe(2)
+    expect(errors[1].values?.line).toBe(3)
+    expect(errors[2].values?.line).toBe(4)
   })
 
   it('rejects numeric fields with trailing garbage', () => {

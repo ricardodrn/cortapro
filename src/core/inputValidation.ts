@@ -1,30 +1,31 @@
+import { msg, type TransMsg } from './i18nMsg.ts'
 import type { PanelSpec, PieceSpec } from './types.ts'
 
 /** Per-field error messages for the panel form. Absent key = valid. */
 export interface PanelIssues {
-  width?: string
-  height?: string
-  thickness?: string
+  width?: TransMsg
+  height?: TransMsg
+  thickness?: TransMsg
 }
 
 /** Per-field error messages for one piece row. Absent key = valid. */
 export interface PieceIssues {
-  code?: string
-  width?: string
-  height?: string
-  quantity?: string
+  code?: TransMsg
+  width?: TransMsg
+  height?: TransMsg
+  quantity?: TransMsg
   /** Piece cannot be cut from the panel in any allowed orientation. */
-  fit?: string
+  fit?: TransMsg
 }
 
 const isPositive = (n: number) => Number.isFinite(n) && n > 0
 
 export function validatePanel(panel: PanelSpec): PanelIssues {
   const issues: PanelIssues = {}
-  if (!isPositive(panel.width)) issues.width = 'Width must be a positive number'
-  if (!isPositive(panel.height)) issues.height = 'Height must be a positive number'
+  if (!isPositive(panel.width)) issues.width = msg('validation.panelWidthPositive')
+  if (!isPositive(panel.height)) issues.height = msg('validation.panelHeightPositive')
   if (panel.thickness !== undefined && !isPositive(panel.thickness)) {
-    issues.thickness = 'Thickness must be a positive number'
+    issues.thickness = msg('validation.panelThicknessPositive')
   }
   return issues
 }
@@ -45,25 +46,31 @@ export function validatePiece(
   const issues: PieceIssues = {}
 
   if (piece.code.trim() === '') {
-    issues.code = 'Code is required'
+    issues.code = msg('validation.pieceCodeRequired')
   } else if (
     allPieces.some((p) => p.id !== piece.id && p.code.trim() === piece.code.trim())
   ) {
-    issues.code = `Duplicate code "${piece.code.trim()}"`
+    issues.code = msg('validation.pieceCodeDuplicate', { code: piece.code.trim() })
   }
 
-  if (!isPositive(piece.width)) issues.width = 'Width must be a positive number'
-  if (!isPositive(piece.height)) issues.height = 'Height must be a positive number'
+  if (!isPositive(piece.width)) issues.width = msg('validation.pieceWidthPositive')
+  if (!isPositive(piece.height)) issues.height = msg('validation.pieceHeightPositive')
   if (!Number.isInteger(piece.quantity) || piece.quantity < 1) {
-    issues.quantity = 'Quantity must be a whole number ≥ 1'
+    issues.quantity = msg('validation.pieceQuantityWhole')
   }
 
   const panelValid = Object.keys(validatePanel(panel)).length === 0
   const sizeValid = !issues.width && !issues.height
   if (panelValid && sizeValid && !pieceFitsPanel(piece, panel)) {
+    const values = {
+      pw: piece.width,
+      ph: piece.height,
+      panelW: panel.width,
+      panelH: panel.height,
+    }
     issues.fit = piece.rotatable
-      ? `${piece.width} × ${piece.height} does not fit the ${panel.width} × ${panel.height} panel in any orientation`
-      : `${piece.width} × ${piece.height} does not fit the ${panel.width} × ${panel.height} panel (rotation is off)`
+      ? msg('validation.pieceFitRotatable', values)
+      : msg('validation.pieceFitFixed', values)
   }
 
   return issues

@@ -1,0 +1,160 @@
+{
+  "app": {
+    "title": "CortaPro",
+    "subtitle": "Cut list optimizer — dimensions in mm",
+    "language": "Language",
+    "lang": {
+      "en": "English",
+      "es": "Spanish"
+    }
+  },
+  "project": {
+    "export": "Export project",
+    "import": "Import project"
+  },
+  "panel": {
+    "stock": "Stock panel",
+    "width": "Width (mm)",
+    "height": "Height (mm)",
+    "material": "Material",
+    "materialPlaceholder": "MDF, plywood…",
+    "thickness": "Thickness (mm, optional)",
+    "cuttingSettings": "Cutting settings",
+    "kerf": "Kerf / blade (mm)",
+    "algorithm": "Algorithm",
+    "aria": {
+      "width": "Panel width in mm",
+      "height": "Panel height in mm",
+      "thickness": "Panel thickness in mm",
+      "kerf": "Saw kerf in mm"
+    }
+  },
+  "packer": {
+    "auto": "Auto (best result)",
+    "maxrects": "MaxRects (max utilization)",
+    "guillotine": "Guillotine (edge-to-edge cuts)"
+  },
+  "pieces": {
+    "title": "Required pieces",
+    "typeCount_one": "{{count}} type",
+    "typeCount_other": "{{count}} types",
+    "total": "{{count}} total",
+    "importCsv": "Import CSV",
+    "loadExample": "Load example",
+    "clearAll": "Clear all",
+    "addPiece": "+ Add piece",
+    "dismiss": "Dismiss",
+    "empty": "No pieces yet. Add one or load the example cut list.",
+    "imported_one": "Imported {{count}} piece type",
+    "imported_other": "Imported {{count}} piece types",
+    "moreErrors": "+{{count}} more errors",
+    "noPiecesInFile": "No pieces found in the file",
+    "noCode": "(no code)",
+    "col": {
+      "code": "Code",
+      "description": "Description",
+      "width": "Width",
+      "height": "Height",
+      "qty": "Qty",
+      "rotate": "Rotate"
+    },
+    "placeholder": {
+      "description": "Description"
+    },
+    "aria": {
+      "code": "Piece code",
+      "description": "Piece description",
+      "width": "Piece width in mm",
+      "height": "Piece height in mm",
+      "quantity": "Piece quantity",
+      "rotatable": "Allow 90° rotation"
+    },
+    "action": {
+      "duplicate": "Duplicate row",
+      "delete": "Delete row"
+    }
+  },
+  "optimization": {
+    "title": "Optimization",
+    "optimize": "Optimize cuts",
+    "optimizing": "Optimizing…",
+    "addToOptimize": "Add at least one piece to optimize.",
+    "fixToOptimize": "Fix the highlighted input errors to optimize.",
+    "summary": "{{panels}} · {{utilization}} utilization · {{waste}} waste",
+    "panelCount_one": "{{count}} panel",
+    "panelCount_other": "{{count}} panels",
+    "unplaced_one": "{{count}} piece could not be placed: {{codes}}",
+    "unplaced_other": "{{count}} pieces could not be placed: {{codes}}"
+  },
+  "results": {
+    "title": "Results",
+    "strategy": "Strategy: {{strategy}}",
+    "print": "Print / PDF",
+    "tile": {
+      "panels": "Panels",
+      "utilization": "Utilization",
+      "waste": "Waste",
+      "usedArea": "Used area",
+      "usedAreaDetail": "of {{total}}",
+      "largestOffcut": "Largest offcut",
+      "piecesPlaced": "Pieces placed"
+    },
+    "perPanel": "Per-panel breakdown",
+    "piecePlacement": "Piece placement",
+    "col": {
+      "panel": "Panel",
+      "pieces": "Pieces",
+      "used": "Used",
+      "waste": "Waste",
+      "utilization": "Utilization",
+      "largestOffcut": "Largest offcut",
+      "piece": "Piece",
+      "size": "Size",
+      "qty": "Qty",
+      "placement": "Placement"
+    },
+    "panelNumber": "Panel {{n}}",
+    "placementEntry": "Panel {{n}} ×{{count}}",
+    "unplacedCount": "({{count}} unplaced)"
+  },
+  "layout": {
+    "title": "Cutting layout",
+    "panelHeading": "Panel {{n}}",
+    "panelMeta": "{{width}} × {{height}} mm · {{pieces}} · {{used}} used",
+    "pieceCount_one": "{{count}} piece",
+    "pieceCount_other": "{{count}} pieces",
+    "resetZoom": "Reset zoom",
+    "ariaLayout": "Cutting layout for panel {{n}}",
+    "tooltip": {
+      "size": "{{width}} × {{height}} mm",
+      "rotated": "(rotated 90°)",
+      "position": "at x {{x}}, y {{y}}"
+    }
+  },
+  "validation": {
+    "panelWidthPositive": "Width must be a positive number",
+    "panelHeightPositive": "Height must be a positive number",
+    "panelThicknessPositive": "Thickness must be a positive number",
+    "pieceCodeRequired": "Code is required",
+    "pieceCodeDuplicate": "Duplicate code \"{{code}}\"",
+    "pieceWidthPositive": "Width must be a positive number",
+    "pieceHeightPositive": "Height must be a positive number",
+    "pieceQuantityWhole": "Quantity must be a whole number ≥ 1",
+    "pieceFitRotatable": "{{pw}} × {{ph}} does not fit the {{panelW}} × {{panelH}} panel in any orientation",
+    "pieceFitFixed": "{{pw}} × {{ph}} does not fit the {{panelW}} × {{panelH}} panel (rotation is off)"
+  },
+  "csv": {
+    "missingColumns": "Line {{line}}: expected code, description, width, height, quantity",
+    "missingCode": "Line {{line}}: missing code",
+    "invalidSize": "Line {{line}}: invalid size \"{{width}}\" × \"{{height}}\"",
+    "invalidQuantity": "Line {{line}}: invalid quantity \"{{quantity}}\""
+  },
+  "projectError": {
+    "notJson": "Not a valid JSON file",
+    "notCortaPro": "Not a CortaPro project file",
+    "noPanel": "Project has no valid panel size",
+    "noPieceList": "Project has no piece list",
+    "pieceDimensions": "Piece {{index}} has invalid dimensions",
+    "pieceQuantity": "Piece {{index}} has an invalid quantity"
+  }
+}

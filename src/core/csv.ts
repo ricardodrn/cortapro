@@ -1,9 +1,10 @@
+import { msg, type TransMsg } from './i18nMsg.ts'
 import type { PieceSpec } from './types.ts'
 
 export interface CsvImportResult {
   pieces: PieceSpec[]
-  /** Human-readable problems, one per skipped line. */
-  errors: string[]
+  /** Translatable problems, one per skipped line. */
+  errors: TransMsg[]
 }
 
 /**
@@ -23,15 +24,16 @@ export function parsePiecesCsv(text: string): CsvImportResult {
   const delimiter = detectDelimiter(firstDataLine)
 
   const pieces: PieceSpec[] = []
-  const errors: string[] = []
+  const errors: TransMsg[] = []
 
   lines.forEach((line, i) => {
     if (line.length === 0) return
     const fields = splitLine(line, delimiter).map((f) => f.trim())
     if (isHeaderRow(fields)) return
 
+    const lineNo = i + 1
     if (fields.length < 5) {
-      errors.push(`Line ${i + 1}: expected code, description, width, height, quantity`)
+      errors.push(msg('csv.missingColumns', { line: lineNo }))
       return
     }
 
@@ -41,15 +43,15 @@ export function parsePiecesCsv(text: string): CsvImportResult {
     const quantity = parseNumber(quantityRaw, delimiter)
 
     if (code === '') {
-      errors.push(`Line ${i + 1}: missing code`)
+      errors.push(msg('csv.missingCode', { line: lineNo }))
       return
     }
     if (!Number.isFinite(width) || width <= 0 || !Number.isFinite(height) || height <= 0) {
-      errors.push(`Line ${i + 1}: invalid size "${widthRaw}" × "${heightRaw}"`)
+      errors.push(msg('csv.invalidSize', { line: lineNo, width: widthRaw, height: heightRaw }))
       return
     }
     if (!Number.isFinite(quantity) || !Number.isInteger(quantity) || quantity < 1) {
-      errors.push(`Line ${i + 1}: invalid quantity "${quantityRaw}"`)
+      errors.push(msg('csv.invalidQuantity', { line: lineNo, quantity: quantityRaw }))
       return
     }
 

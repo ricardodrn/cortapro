@@ -1,8 +1,10 @@
+import { useTranslation } from 'react-i18next'
 import { useAppStore } from '../../state/store.ts'
 import { FALLBACK_COLOR, pieceColorMap } from '../../utils/pieceColors.ts'
 import PanelView from './PanelView.tsx'
 
 export default function LayoutResults() {
+  const { t } = useTranslation()
   const result = useAppStore((s) => s.result)
   const pieces = useAppStore((s) => s.pieces)
 
@@ -21,7 +23,7 @@ export default function LayoutResults() {
   return (
     <section className="space-y-4">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm print:break-inside-avoid print:border-0 print:px-0 print:shadow-none">
-        <h2 className="text-sm font-semibold text-slate-700">Cutting layout</h2>
+        <h2 className="text-sm font-semibold text-slate-700">{t('layout.title')}</h2>
         <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-600">
           {pieces
             .filter((p) => placedCounts.has(p.id))
