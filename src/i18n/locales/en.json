@@ -18,7 +18,7 @@
     "height": "Height (mm)",
     "material": "Material",
     "materialPlaceholder": "MDF, plywood…",
-    "thickness": "Thickness (mm, optional)",
+    "thickness": "Thickness (mm, opt.)",
     "cuttingSettings": "Cutting settings",
     "kerf": "Kerf / blade (mm)",
     "algorithm": "Algorithm",

@@ -9,11 +9,11 @@ const PACKER_KINDS: PackerKind[] = ['auto', 'maxrects', 'guillotine']
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <label className="block">
-      <span className="mb-1 block text-xs font-medium tracking-wide text-slate-500 uppercase">
+    <label className="flex h-full flex-col">
+      <span className="mb-2 block min-h-[2rem] break-words text-[11px] font-medium leading-tight tracking-wide text-slate-500 uppercase sm:text-xs">
         {label}
       </span>
-      {children}
+      <div className="flex-1">{children}</div>
     </label>
   )
 }
@@ -28,10 +28,10 @@ export default function PanelForm({ issues }: { issues: PanelIssues }) {
   const setPacker = useAppStore((s) => s.setPacker)
 
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-      <h2 className="mb-4 text-sm font-semibold text-slate-700">{t('panel.stock')}</h2>
+    <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-7">
+      <h2 className="mb-5 text-sm font-semibold text-slate-700">{t('panel.stock')}</h2>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
         <Field label={t('panel.width')}>
           <NumberField
             value={panel.width}
@@ -68,10 +68,10 @@ export default function PanelForm({ issues }: { issues: PanelIssues }) {
         </Field>
       </div>
 
-      <h2 className="mt-6 mb-4 text-sm font-semibold text-slate-700">
+      <h2 className="mt-7 mb-5 text-sm font-semibold text-slate-700">
         {t('panel.cuttingSettings')}
       </h2>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
         <Field label={t('panel.kerf')}>
           <NumberField value={kerf} onCommit={setKerf} aria-label={t('panel.aria.kerf')} />
         </Field>
