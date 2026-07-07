@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/core/optimizer.test.ts","./src/core/optimizer.ts","./src/core/types.ts","./src/core/validate.ts","./src/core/packers/guillotine.ts","./src/core/packers/maxrects.ts","./src/core/packers/packer.ts"],"version":"6.0.3"}
