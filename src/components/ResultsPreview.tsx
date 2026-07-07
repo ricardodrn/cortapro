@@ -7,12 +7,13 @@ import { useAppStore } from '../state/store.ts'
 export default function ResultsPreview({ inputsValid }: { inputsValid: boolean }) {
   const result = useAppStore((s) => s.result)
   const pieces = useAppStore((s) => s.pieces)
+  const optimizing = useAppStore((s) => s.optimizing)
   const runOptimize = useAppStore((s) => s.runOptimize)
 
-  const canRun = inputsValid && pieces.length > 0
+  const canRun = inputsValid && pieces.length > 0 && !optimizing
 
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm print:hidden">
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-semibold text-slate-700">Optimization</h2>
         <button
@@ -21,11 +22,11 @@ export default function ResultsPreview({ inputsValid }: { inputsValid: boolean }
           disabled={!canRun}
           className="rounded-md bg-emerald-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-300"
         >
-          Optimize cuts
+          {optimizing ? 'Optimizing…' : 'Optimize cuts'}
         </button>
       </div>
 
-      {!canRun && (
+      {!canRun && !optimizing && (
         <p className="mt-3 text-xs text-slate-400">
           {pieces.length === 0
             ? 'Add at least one piece to optimize.'
@@ -41,30 +42,12 @@ export default function ResultsPreview({ inputsValid }: { inputsValid: boolean }
             <span className="font-semibold">{result.stats.utilizationPct.toFixed(1)}%</span>{' '}
             utilization · {result.stats.wastePct.toFixed(1)}% waste
           </p>
-          <ul className="mt-2 space-y-1 text-xs text-slate-500">
-            {result.layouts.map((layout, i) => (
-              <li key={i}>
-                Panel {i + 1}: {layout.placements.length} pieces,{' '}
-                {(layout.utilization * 100).toFixed(1)}% used
-              </li>
-            ))}
-            {result.stats.largestFreeRect && (
-              <li>
-                Largest reusable offcut: {result.stats.largestFreeRect.width} ×{' '}
-                {result.stats.largestFreeRect.height} mm
-              </li>
-            )}
-            <li className="text-slate-400">Strategy: {result.strategy}</li>
-          </ul>
           {result.unplaced.length > 0 && (
             <p className="mt-3 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-700">
               {result.unplaced.length} piece{result.unplaced.length === 1 ? '' : 's'} could
               not be placed: {result.unplaced.map((u) => u.code).join(', ')}
             </p>
           )}
-          <p className="mt-3 text-xs text-slate-400 italic">
-            Visual cutting layout arrives in Phase 3.
-          </p>
         </div>
       )}
     </section>

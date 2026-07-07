@@ -1,7 +1,8 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { OptimizeResult, PackerKind, PanelSpec, PieceSpec } from '../core/types.ts'
-import { optimize } from '../core/optimizer.ts'
+import type { ProjectData } from '../core/project.ts'
+import { optimizeAsync } from '../core/optimizeAsync.ts'
 
 const newId = () => crypto.randomUUID()
 
@@ -39,6 +40,15 @@ function nextCode(pieces: PieceSpec[]): string {
   }
 }
 
+/** Bumped on every input change so a worker reply for stale inputs is dropped. */
+let optimizeRun = 0
+
+/** Spread into any input mutation: clears the result and cancels an in-flight run. */
+function invalidate() {
+  optimizeRun++
+  return { result: null, optimizing: false }
+}
+
 interface AppState {
   panel: PanelSpec
   pieces: PieceSpec[]
@@ -46,11 +56,17 @@ interface AppState {
   packer: PackerKind
   /** Last optimizer run; cleared whenever inputs change. Not persisted. */
   result: OptimizeResult | null
+  /** True while the optimizer worker is running. Not persisted. */
+  optimizing: boolean
 
   setPanel: (patch: Partial<PanelSpec>) => void
   setKerf: (kerf: number) => void
   setPacker: (packer: PackerKind) => void
   addPiece: () => void
+  /** Appends imported pieces (CSV import). */
+  addPieces: (pieces: PieceSpec[]) => void
+  /** Replaces the whole session with a loaded project file. */
+  loadProject: (project: ProjectData) => void
   updatePiece: (id: string, patch: Partial<Omit<PieceSpec, 'id'>>) => void
   removePiece: (id: string) => void
   duplicatePiece: (id: string) => void
@@ -67,10 +83,11 @@ export const useAppStore = create<AppState>()(
       kerf: 0,
       packer: 'auto',
       result: null,
+      optimizing: false,
 
-      setPanel: (patch) => set({ panel: { ...get().panel, ...patch }, result: null }),
-      setKerf: (kerf) => set({ kerf, result: null }),
-      setPacker: (packer) => set({ packer, result: null }),
+      setPanel: (patch) => set({ panel: { ...get().panel, ...patch }, ...invalidate() }),
+      setKerf: (kerf) => set({ kerf, ...invalidate() }),
+      setPacker: (packer) => set({ packer, ...invalidate() }),
 
       addPiece: () =>
         set((s) => ({
@@ -86,17 +103,22 @@ export const useAppStore = create<AppState>()(
               rotatable: true,
             },
           ],
-          result: null,
+          ...invalidate(),
         })),
+
+      addPieces: (pieces) =>
+        set((s) => ({ pieces: [...s.pieces, ...pieces], ...invalidate() })),
+
+      loadProject: (project) => set({ ...project, ...invalidate() }),
 
       updatePiece: (id, patch) =>
         set((s) => ({
           pieces: s.pieces.map((p) => (p.id === id ? { ...p, ...patch } : p)),
-          result: null,
+          ...invalidate(),
         })),
 
       removePiece: (id) =>
-        set((s) => ({ pieces: s.pieces.filter((p) => p.id !== id), result: null })),
+        set((s) => ({ pieces: s.pieces.filter((p) => p.id !== id), ...invalidate() })),
 
       duplicatePiece: (id) =>
         set((s) => {
@@ -106,16 +128,25 @@ export const useAppStore = create<AppState>()(
           const copy = { ...source, id: newId(), code: nextCode(s.pieces) }
           const pieces = [...s.pieces]
           pieces.splice(index + 1, 0, copy)
-          return { pieces, result: null }
+          return { pieces, ...invalidate() }
         }),
 
-      clearPieces: () => set({ pieces: [], result: null }),
+      clearPieces: () => set({ pieces: [], ...invalidate() }),
       loadExample: () =>
-        set({ panel: { width: 2300, height: 1800, material: 'MDF' }, pieces: examplePieces(), result: null }),
+        set({
+          panel: { width: 2300, height: 1800, material: 'MDF' },
+          pieces: examplePieces(),
+          ...invalidate(),
+        }),
 
       runOptimize: () => {
         const { panel, pieces, kerf, packer } = get()
-        set({ result: optimize(panel, pieces, { kerf, packer }) })
+        const run = ++optimizeRun
+        set({ result: null, optimizing: true })
+        void optimizeAsync(panel, pieces, { kerf, packer }).then((result) => {
+          if (run !== optimizeRun) return // inputs changed or a newer run started
+          set({ result, optimizing: false })
+        })
       },
     }),
     {

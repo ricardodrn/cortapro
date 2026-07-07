@@ -1,1 +1,14 @@
 @import 'tailwindcss';
+
+/* Printable cutting plan: keep piece colors, sane page margins. */
+@page {
+  size: A4;
+  margin: 12mm;
+}
+
+@media print {
+  * {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

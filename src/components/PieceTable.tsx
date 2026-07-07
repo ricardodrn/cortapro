@@ -1,6 +1,8 @@
+import { useRef, useState } from 'react'
 import { useAppStore } from '../state/store.ts'
 import type { PieceIssues } from '../core/inputValidation.ts'
 import type { PieceSpec } from '../core/types.ts'
+import { parsePiecesCsv } from '../core/csv.ts'
 import NumberField from './NumberField.tsx'
 
 const textInputClass =
@@ -102,8 +104,25 @@ function PieceRow({ piece, issues }: { piece: PieceSpec; issues: PieceIssues }) 
 export default function PieceTable({ issues }: { issues: Record<string, PieceIssues> }) {
   const pieces = useAppStore((s) => s.pieces)
   const addPiece = useAppStore((s) => s.addPiece)
+  const addPieces = useAppStore((s) => s.addPieces)
   const clearPieces = useAppStore((s) => s.clearPieces)
   const loadExample = useAppStore((s) => s.loadExample)
+
+  const csvInput = useRef<HTMLInputElement>(null)
+  const [importStatus, setImportStatus] = useState<{ ok: boolean; text: string } | null>(null)
+
+  const importCsv = async (file: File) => {
+    const { pieces: imported, errors } = parsePiecesCsv(await file.text())
+    if (imported.length > 0) addPieces(imported)
+    const parts = []
+    if (imported.length > 0) parts.push(`Imported ${imported.length} piece types`)
+    if (errors.length > 0) parts.push(errors.slice(0, 3).join(' · '))
+    if (errors.length > 3) parts.push(`+${errors.length - 3} more errors`)
+    setImportStatus({
+      ok: errors.length === 0 && imported.length > 0,
+      text: parts.join(' — ') || 'No pieces found in the file',
+    })
+  }
 
   const errorMessages = pieces.flatMap((p) => {
     const rowIssues = issues[p.id]
@@ -112,8 +131,8 @@ export default function PieceTable({ issues }: { issues: Record<string, PieceIss
   })
 
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div className="mb-4 flex items-center justify-between">
+    <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-sm font-semibold text-slate-700">
           Required pieces
           <span className="ml-2 font-normal text-slate-400">
@@ -121,7 +140,25 @@ export default function PieceTable({ issues }: { issues: Record<string, PieceIss
             {pieces.reduce((sum, p) => sum + p.quantity, 0)} total
           </span>
         </h2>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => csvInput.current?.click()}
+            className="rounded-md px-3 py-1.5 text-xs font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
+          >
+            Import CSV
+          </button>
+          <input
+            ref={csvInput}
+            type="file"
+            accept=".csv,text/csv,text/plain"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0]
+              if (file) void importCsv(file)
+              e.target.value = ''
+            }}
+          />
           <button
             type="button"
             onClick={loadExample}
@@ -145,6 +182,23 @@ export default function PieceTable({ issues }: { issues: Record<string, PieceIss
           </button>
         </div>
       </div>
+
+      {importStatus && (
+        <p
+          className={`mb-3 rounded-md px-3 py-2 text-xs ${
+            importStatus.ok ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
+          }`}
+        >
+          {importStatus.text}
+          <button
+            type="button"
+            onClick={() => setImportStatus(null)}
+            className="ml-2 font-medium underline"
+          >
+            Dismiss
+          </button>
+        </p>
+      )}
 
       {pieces.length === 0 ? (
         <p className="rounded-md border border-dashed border-slate-300 px-4 py-8 text-center text-sm text-slate-400">
