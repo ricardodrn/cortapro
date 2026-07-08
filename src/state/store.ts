@@ -79,7 +79,7 @@ export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
       panel: { width: 2300, height: 1800, material: 'MDF' },
-      pieces: examplePieces(),
+      pieces: [],
       kerf: 0,
       packer: 'auto',
       result: null,
