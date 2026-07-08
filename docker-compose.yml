@@ -1,0 +1,10 @@
+services:
+  cortapro:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cortapro:latest
+    container_name: cortapro
+    restart: unless-stopped
+    ports:
+      - "3006:80"
