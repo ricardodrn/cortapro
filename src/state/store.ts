@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { createJSONStorage, persist } from 'zustand/middleware'
 import type { OptimizeResult, PackerKind, PanelSpec, PieceSpec } from '../core/types.ts'
 import type { ProjectData } from '../core/project.ts'
 import { optimizeAsync } from '../core/optimizeAsync.ts'
@@ -152,6 +152,9 @@ export const useAppStore = create<AppState>()(
     {
       name: 'cortapro-inputs',
       version: 1,
+      // Explicit `localStorage` instead of zustand's default `window.localStorage`:
+      // the latter throws in any context without a `window` global (e.g. tests).
+      storage: createJSONStorage(() => localStorage),
       partialize: ({ panel, pieces, kerf, packer }) => ({ panel, pieces, kerf, packer }),
     },
   ),
