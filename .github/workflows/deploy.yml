@@ -6,6 +6,7 @@ on:
 
 jobs:
   deploy:
+    environment: Secrets
     runs-on: ubuntu-latest
     steps:
       - name: Install cloudflared
